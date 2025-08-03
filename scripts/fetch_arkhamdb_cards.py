@@ -14,6 +14,7 @@ df = pd.DataFrame(cards)
 # Save the full table to a CSV file for verification
 df.to_csv("arkhamdb_cards.csv", index=False)
 
+
 # Only fetch and save all cards to CSV
 print("Saved all cards to arkhamdb_cards.csv")
 print(df[["code", "name", "type_code", "faction_code"]].head(20))

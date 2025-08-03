@@ -52,6 +52,29 @@ def classify_card(row):
 
 combined_df["card_type"] = combined_df.apply(classify_card, axis=1)
 
+# Build a mapping from signature card code to investigator name
+sig_to_investigator = {}
+for _, row in investigator_cards.iterrows():
+    investigator_name = row["name"]
+    deck_req_str = row.get("deck_requirements", None)
+    if pd.notnull(deck_req_str):
+        try:
+            deck_req = ast.literal_eval(deck_req_str)
+            card_dict = deck_req.get("card", {})
+            for v in card_dict.values():
+                for code in v.keys():
+                    sig_to_investigator[code] = investigator_name
+        except Exception:
+            pass
+
+def get_linked_investigator(row):
+    if row["code"] in signature_codes:
+        return sig_to_investigator.get(row["code"], "")
+    else:
+        return ""
+
+combined_df["linked_investigator"] = combined_df.apply(get_linked_investigator, axis=1)
+
 # Save to new CSV
 combined_df.to_csv("arkhamdb_player_cards_classified.csv", index=False)
 print("Combined player cards with classification saved to arkhamdb_player_cards_classified.csv")
